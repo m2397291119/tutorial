@@ -1,0 +1,411 @@
+﻿【除去教程一需要在Windows上使用UE打开该教程（使用txt看会比较乱），剩下的所有步骤，都可以在Ubuntu上使用gedit打开，或直接双击打开。】
+
+一.以双系统的方式安装Ubuntu系统
+  1.做U盘启动器
+   Ubuntu版本：16.04  电脑：实验室Lenovo台式机  Windows版本：win7（64位）
+  【注：此教程写于2019年10月，此时流行且稳定的版本为Ubuntu16.04。将来版本会更改，需要自行去官网下载18.04的.ios镜像文件，在安装系统前，请先确定自己
+Windows的版本及是否为64位，32位Windows系统安装64位Ubuntu系统理论上可行，但有时候会安装失败，有兴趣的可以自己试试。】
+  【注：因为各种原因，将来一次次的重装系统很正常，所以把这个掌握了，以后重装系统就不会很费劲了，把装系统当成常态。】
+  在Windows系统中，插入U盘（8G左右就够用），双击“计算机”，在U盘图标上右键“格式化”——开始——确定。在安装包文件夹中双击
+UniversalUSBInstaller_1.9.6.1_XiaZaiBa.zip，双击Universal-USB-Installer-1.9.6.1.exe，点击“I Agree”，在选项Step1中选择Ubuntu，在选项Step2中单击
+Browse，浏览找到ubuntu-16.04.5-desktop-amd64.iso并打开，在选项Step3中选择U盘所在的盘符，会弹出Step4，Size拉到4089M（或最大）。点击Create——是，然
+后等待就行了。（大概需要半小时左右）。
+  2.分出磁盘可用空间
+  在计算机右键“管理”，弹出窗口“计算机管理”，找到磁盘管理，在最后一个盘（驱动器号最靠后的一个盘，正常情况下最后一个盘是逻辑分区，如果不是，找到是逻辑分区的盘进行压缩卷操作）上右键“压缩卷”
+  在“输入压缩空间量”中输入“170000”【大概170G左右，为防止后续使用中磁盘不够还要再做扩容，所以分出的多一些】，点击“压缩”。
+  如果分出的是绿色的可用空间，则直接进入步骤3，接下来的安装系统应该会一帆风顺，如果是黑色的未分配，则在后续安装系统时可能会遇到问题，到时候再说。
+  【附：将黑色的未分配空间归入磁盘的操作，通常重做系统时会用到】
+  (1)在开始栏的搜索中输入cmd。打开cmd，输入命令：diskpart，进入磁盘划分模式。
+  (2)输入命令：list disk，查看当前计算机中的磁盘。
+  (3)输入命令：select disk 0，选择要创建扩展分区的磁盘，一般都是0，因为你会看到磁盘总容量都在磁盘0里。
+  (4)输入命令：list volume，查看磁盘中的卷。
+  (5)输入命令：select volume “数字”，此处数字为你通过(4)中命令看到卷所对应的数字，且应选中黑色未分配区域相邻的一块分区的卷（优先选择绿色逻辑分区的卷）
+  (6)输入命令：extend,黑色未分配区域会被合并到已有磁盘卷中。
+  3.设置U盘启动
+  U盘插到电脑上，重启电脑，某些电脑可以直接进入U盘启动器，而有些则需要通过进入BIOS进行设置。（本教程适用于Win7的联想台式，Win7的联想笔记本也类似。其他品牌电脑需要自行百度）
+  首先U盘插到电脑上，重启电脑，在显示Lenovo图标时一直不停的按F1，可进入BIOS系统，在setup（启动）选项中将usb启动开启（具体细节自行百度），然后保存并退出。若再次重启依旧无法自行进入U盘启动器，则在显示Lenovo时一直不停的按F12，可进入启动设备菜单，可以看到 ：
+  USB KEY：General UDisk 5.00
+    ├Legacy：General UDisk 5.00            【win7电脑直接选择这个按Enter进入U盘启动器】
+    └UEFI：General UDisk 5.00              【至于win8和win10，鉴于其启动机制已经换成UEFI，可以先试试从Legacy进入，若不行再从UEFI进入】
+  3.安装系统
+  (1)进入Ubuntu安装菜单后，选择第二个——Install Ubuntu。
+  (2)选择“中文简体”。
+  (3)建议不要选择联网以及在“安装中下载更新”等选项。
+  (4)此处注意!!!，安装类型中，选择第四个——其他选项。
+  (5)现在你将看到硬盘分区情况，找到设备显示为“空闲”所对应的空间，其大小应该是2中分出的170000MB。
+  (6)首先单击“空闲”所在盘符，选中后，点击下方的“+”。
+  (7)接下来要进行四次分区，且每次都是从“空闲”中分出部分区域。
+     第一次分区：
+     上一步点“+”，在弹出窗口进行如下设置：
+     挂载点：/
+     大小：80000MB                 【此大小是根据我分出170000MB决定的】
+     新分区的类型：主分区
+     新分区的位置：空间起始位置
+     用于：Ext4日志文件系统
+     点击确定，第一次分区完毕。
+     【若是第一次分区结束后发现点“空闲”后“+”不可选择，或者剩下的空间不再是“空闲”，则是因为系统的主分区数达到上限，则点击选择刚分出的区域，然后点“-”，删除掉，重新进行第一次分区，类型选择为：逻辑分区】
+     第二次分区：
+     点击“空闲”处，继续点“+”，在弹出窗口进行如下设置：
+     挂载点：不设置
+     大小：4096MB                  【网上认为是物理内存的2倍，通常为1G，2G。但是为避免以后使用的问题，就给4G】
+     新分区的类型：逻辑分区
+     新分区的位置：空间起始位置
+     用于：交换空间
+     点击确定，第二次分区完毕。
+     第三次分区：
+     点击“空闲”处，继续点“+”，在弹出窗口进行如下设置：
+     挂载点：/boot                  【用于双系统引导使用】
+     大小：4096MB                   【也是为避免以后使用的问题，4G应该足够使用很久不会出问题】
+     新分区的类型：逻辑分区
+     新分区的位置：空间起始位置
+     用于：Ext4日志文件系统
+     点击确定，第三次分区完毕。
+     第四次分区：
+     点击“空闲”处，继续点“+”，在弹出窗口进行如下设置：
+     挂载点：/home
+     大小：剩余全部空间，剩下显示多少就多少
+     新分区的类型：逻辑分区
+     新分区的位置：空间起始位置
+     用于：Ext4日志文件系统
+     点击确定，第四次分区完毕。
+     【不要着急点安装，不要着急点安装，不要着急点安装!!!】
+  (8)安装启动引导器的设备：
+     点下拉按钮浏览，找到对应刚分出区域/boot的分区。【此举会帮你从Windows引导ubuntu，若默认，则为ubuntu引导Windows，这样做存在的问题是：若要重做系统，会导致你直接进不去Windows】
+     点击“现在安装”。
+  (9)之后的步骤按照提示点，注意两点：
+     一.键盘布局，默认是汉语，建议选择“英语(美国)”
+     二.设置个人信息时，用户名简单一些，密码要更简单，例如123，以后用密码的时候很多，密码太过于复杂会很麻烦。
+  (10)安装后等待就行了，完成后会提示你重启，你会发现直接进入Windows，没有进入Ubuntu的引导项。
+  4.设置引导项
+  进入Windows，在安装包文件夹中打开EasyBCD_2.3.0.207_XiaZaiBa.zip，双击EasyBCD 2.3.exe进行安装。
+  打开EasyBCD软件，单击左侧“添加新条目”，操作系统中：
+    类型选择“Linux/BSD”
+    类型选择“GRUB 2”
+    驱动器：下拉浏览，找到/boot对应的分区，即为（Linux-4 GiB）的分区。
+  点击“添加条目”。
+  单击左侧“编辑引导菜单”，可以发现有Ubuntu的引导项了，默认进入Windows。“菜单选项”中的倒计时设置为30秒。
+  完成后保存设置。重启后即可看到有ubuntu的引导了。
+5.关于卸载系统
+  若要卸载系统，则同2中进入磁盘管理，删除ubuntu系统的四个分区即可。特点是，在右键“删除卷”时，会提示：所选的分区不是Windows创建的，可能含有其他操作
+系统可以识别的数据。你想删除这个分区吗？。删除的四个分区最后会合并到一起。然后重装系统就OK了。
+
+【前言：因为有可能看这篇教程的对于Linux不太懂，所以很多地方说的比较多，但凡可能出现Error的地方，我都提到了。另外，下方的命令，希望能看着教程进行手打，对于理解命令很有帮助。学习Linux基本命令是重中之重，不可跳过，否则没了教程，你将啥也不会一脸懵逼】
+二.学习linux基本命令（不求精通，但起码得掌握基本命令和命令书写规则，非常重要！！！）
+  
+  网址：http://cn.linux.vbird.org/linux_basic/linux_basic.php    （不必买书，网上学习即可。百度搜索：鸟哥的Linux私房菜）
+  
+  学习重点：第一部分：首次登录与在线求助 man page[其余章节也可以多看看，有用]
+           
+  第二部分：Linux文件权限与目录配置[重点，文件权限，更改文件权限]
+                    
+            Linux文件与目录管理[大重点章节，了解cd的用法，相对路径和绝对路径的区别，pwd，mkdir，rmdir，ls，cp，rm，mv，locate（某些时候很有用）等]
+  
+  第三部分：vim程序编辑器[vi和vim的使用，大概了解，多用于只能使用终端时的文件编辑。当能使用显示器的编辑文件时，大多使用gedit]
+           
+  第五步分：软件安装：原始码与Tarball[源码安装十分有用，认真学习]
+                    
+            软件安装：RPM，SRPM与YUM功能[偶尔会用到RPM安装]
+                    
+            核心编译[很重要]
+  
+ （上述学习完之后，基本使用Linux系统不成问题。若要深入了解，把其他章节也认真学习。）
+
+三.安装ros（按Ubuntu版本决定所安装的ros的版本）
+  
+   Ubuntu版本：16.04  ros版本：kinetic
+  
+   网址：https://www.ncnynl.com/archives/201801/2273.html  （创客智造）
+  
+  1.安装源
+    sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+  （若用上述源失败，可用中国的源）
+    sudo sh -c '. /etc/lsb-release && echo "deb http://mirrors.ustc.edu.cn/ros/ubuntu/ $DISTRIB_CODENAME main" > /etc/apt/sources.list.d/ros-latest.list'
+2.设置key
+    sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+  3.更新源 
+    sudo apt-get update
+  （若在执行上述命令后，有报错，且关于ros，则需要你自己百度搜索解决，直至sudo apt-get update命令执行后正常结束）
+  4.安装
+    sudo apt-get install ros-kinetic-desktop-full
+    （此处kinetic为ros版本号）
+（若在执行此处后有报错，类似于“E: 下载 http://39.137.2.230/cache/cn.archive.ubuntu.com/ubuntu/pool/main/s/systemd/udev_229-4ubuntu21.22_amd64.debich_args2=34514090007028360_e627b12e8014e041aae3f0ca3ea64092_10001002_9c89632dd7c2f5d9963f518939a83798_bca2cd28aff9ec179
+b36ec93ef7d8b24  504  Gateway Timeout 失败”，再次执行上述命令sudo apt-get install ros-kinetic-desktop-full，可得到类似于“
+      正在设置 python-yaml (3.11-3build1) ...  
+      正准备解包 .../libfreetype6-dev_2.6.1-0.1ubuntu2.4_amd64.deb  ...
+      正在解包 libfreetype6-dev:amd64 (2.6.1-0.1ubuntu2.4) ...
+      正在选中未选择的软件包 libfontconfig1-dev:amd64。”的结果，且正常结束则可以继续）
+  5.解决依赖
+    sudo rosdep init
+    （命令正常结束后才可继续执行下述命令，认真阅读命令执行后的反馈可以帮你很多，注意此处反馈：Wrote /etc/ros/rosdep/sources.list.d/20-default.list，记住该地址）
+    rosdep update
+    （此处命令很容易出错，若该命令结束后报错Error，不可忽略，有两种解决方式）
+    （一.重复执行命令直至正常结束为止，看运气，在清晨或者晚上有大概率可成功，多扶老奶奶过马路吧）
+    （二.百度，结果应是告诉你打开一个文件[里面是一些源的地址]，把里面的全选删除替换成他给你的源[这是基于你的系统是新安的，没什么其他的源，可以全部删除并替换。若是安了其他的软件，那么需要你自己酌情考虑，或百度解决]。
+        然后继续执行步骤2.3.4，完成后，执行命令sudo rm -r /etc/ros/rosdep/sources.list.d/20-default.list。此命令是删除上述步骤5命令执行后生成的文件。
+        最后再次执行步骤5的两条命令，若第二条命令依旧失败，无限尝试解决方式1。）
+  6.管理环境变量
+    export | grep ROS
+    （该命令执行后应得到反馈，类似于
+     declare -x ROSLISP_PACKAGE_DIRECTORIES=""
+     declare -x ROS_DISTRO="kinetic"
+     declare -x ROS_ETC_DIR="/opt/ros/kinetic/etc/ros"
+     declare -x ROS_MASTER_URI="http://localhost:11311"
+     declare -x ROS_PACKAGE_PATH="/opt/ros/kinetic/share"
+     declare -x ROS_ROOT="/opt/ros/kinetic/share/ros"
+     declare -x ROS_VERSION="1"
+     若执行命令后无反馈，执行命令source /opt/ros/kinetic/setup.bash    此处kinetic为ros版本。执行后再执行export | grep ROS，应该就能成功了。）
+     【注：声明.bash文件很重要，否则讲无法使用ros命令。此处介绍一种方法：
+       cd
+       sudo gedit .bashrc
+       将打开隐藏文件.bashrc，在文件最后添加:source /opt/ros/kinetic/setup.bash
+       以后新建完工作空间后，都将生成devel/setup.bash，可同上在.bashrc文件中添加:source /home/mxh(根据个人用户名)/catkin_ws（根据个人工作空间名）/devel/setup.bash】
+  7.创建工作空间
+    输入命令：roscore 若执行正常，则说明ros安装成功
+    跟着网址走就行了，不会出现意外报错，懒得写了。
+四.安装cartographer
+  网址一：https://www.cnblogs.com/BlueMountain-HaggenDazs/p/6691709.html    【内含rplidar安装，但其内容比较老】
+  网址二：http://community.bwbot.org/topic/136/google%E6%BF%80%E5%85%89%E9%9B%B7%E8%BE%BEslam%E7%AE%97%E6%B3%95cartographer%E7%9A%84%E5%AE%89%E8%A3%85%E5%8F%8Abag%E5%8C%85demo%E6%B5%8B%E8%AF%95/2                               【此为蓝鲸ROS机器人论坛，是我找到的一个新的cartographer的安装教程，其github还提供自己写的一些基于cartographer的包】
+  【附带另二网址：1.https://github.com/BlueWhaleRobot/cartographer_ros   （此为蓝鲸自己写的cartographer_ros包，很有用）】
+  【2.https://blog.csdn.net/u012686154/article/details/88342872   （这个网址里写了cartographer+velodyne64+IMU。对于我们利用cartographer+velodyne16有一定参考价值，但此网址内容是否实用我还没来得及进行验证）】
+  下方步骤是根据网址二写的：
+  1.安装依赖包
+    sudo apt-get update
+    sudo apt-get install -y cmake g++ git google-mock libboost-all-dev libcairo2-dev libeigen3-dev libgflags-dev libgoogle-glog-dev liblua5.2-dev libprotobuf-dev libsuitesparse-dev libwebp-dev ninja-build protobuf-compiler python-sphinx
+  (此处安装依赖较多，若要手打，避免打错，用Tab补)
+  2.安装ceres solver库
+    cd
+    git clone https://github.com/BlueWhaleRobot/ceres-solver.git
+    cd ceres-solver
+    mkdir build
+    cd build
+    cmake ..          【注意命令有两个点】
+    make              【注意网址上此处为make -j，-j会开启多线程编译，会加快编译速度，但因为电脑硬件问题，容易卡死，不建议】
+    sudo make install
+  3.安装protobuf3.0
+    cd
+    git clone https://github.com/google/protobuf.git
+    cd protobuf
+    mkdir build
+    cd build
+    cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF ../cmake
+    make
+    sudo make install
+  4.安装cartographer
+    cd
+    git clone https://github.com/BlueWhaleRobot/cartographer.git
+    cd cartographer
+    mkdir build
+    cd build
+    cmake ..
+    make
+    sudo make install
+  5.安装cartographer_ros
+    cd
+    cd catkin_ws/src        【如果已经建好了工作空间，可以cd到自己的工作空间。给个建议，把cartographer_ros和velodyne驱动包放在一个工作空间下】
+    git clone https://github.com/BlueWhaleRobot/cartographer_ros.git
+    cd ..
+    catkin_make
+  6.测试demo包
+    这个不是必要的步骤，用于验证cartographer是否安装成功，所以按照网页自己做吧
+五.配置velodyne16并安装其ros驱动包
+  网址1：https://www.cnblogs.com/Mrzhang95/p/9443808.html           （用于velodyne连接配置，【注意】其后续安装驱动包命令错误）
+  网址2：https://www.jianshu.com/p/ff4f2183f9fd                     （用于安装velodyne16的ros驱动包）
+  网址3：https://blog.csdn.net/qq_36396941/article/details/83048660 （这篇文章末尾有VLP16.yaml的百度云连接）
+  1.首先将velodyne16通过网线连接到电脑上并连接其电源。单击电脑屏幕右上角的网络连接图标——编辑连接，弹出“网络连接”窗口，单击“增加”，选择连接类型“以太网”——新建，连接名称填写“velodyne”，单击选择IPv4设置，方法更改为“手动”，单击增加，地址处填写“192.168.1.200”，子网掩码填写“24”，网关填写“192.168.1.0”。最后保存。【见网址1】
+  2.配置完成后，打开浏览器，输入网址192.168.1.201，弹出界面【见网址1】。若能显示界面，则表示通信已经完成。建议将此网址保存，以便于验证连接。
+  3.开始安装VLP16驱动：新建ROS工程：mkdir -p catkin_velodyne/src
+                                  cd catkin_velodyne/src                【若已经建好了工程(工作空间)，则可略去前两步】
+                                  git clone https://github.com/ros-drivers/velodyne.git
+                                  cd ..         【注意命令有两个点】
+                                  rosdep install --from-paths src --ignore-src --rosdistro kinetic -y             【kinetic为ros版本】
+                                  catkin_make
+                                  source devel/setup.bash
+  4.生成yaml文件：从附赠的U盘中复制出Velodyne的.xml文件转换成ROS节点的.yaml文件
+    cd到工作空间
+    rosrun velodyne_pointcloud gen_calibration.py XXX/VLP-16.xml         【输入命令时建议用Tab（Tab的用法在“鸟哥的Linux私房菜”中有讲到，是非常非常重要的工具）补全来保证命令或路径的正确，XXX为.xml文件的路径，此处要输入绝对路径，不清楚的可以在文件右键查看路径】
+    上述命令完成后会在.xml所在目录下生成对应的.yaml文件。
+    【避免你们找不到.xml文件或不会生成.yaml文件，我已经找好了百度云链接，vlp16.yaml 链接: https://pan.baidu.com/s/1c327b7IT3M5UTrF02Xua2g 提取码: m6yr】
+    【再次避免你们下载不了，直接把文件内容放在这，你们自己新建处这个文件，填好文件名VLP-16.yaml（名字可以随便填，但涉及到下方命令更改），把下面***中间的内容复制粘贴进去即可】
+***********************************************************************************************
+lasers:
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 0, rot_correction: 0.0,
+  vert_correction: -0.2617993877991494, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 1, rot_correction: 0.0,
+  vert_correction: 0.017453292519943295, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 2, rot_correction: 0.0,
+  vert_correction: -0.22689280275926285, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 3, rot_correction: 0.0,
+  vert_correction: 0.05235987755982989, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 4, rot_correction: 0.0,
+  vert_correction: -0.19198621771937624, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 5, rot_correction: 0.0,
+  vert_correction: 0.08726646259971647, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 6, rot_correction: 0.0,
+  vert_correction: -0.15707963267948966, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 7, rot_correction: 0.0,
+  vert_correction: 0.12217304763960307, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 8, rot_correction: 0.0,
+  vert_correction: -0.12217304763960307, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 9, rot_correction: 0.0,
+  vert_correction: 0.15707963267948966, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 10, rot_correction: 0.0,
+  vert_correction: -0.08726646259971647, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 11, rot_correction: 0.0,
+  vert_correction: 0.19198621771937624, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 12, rot_correction: 0.0,
+  vert_correction: -0.05235987755982989, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 13, rot_correction: 0.0,
+  vert_correction: 0.22689280275926285, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 14, rot_correction: 0.0,
+  vert_correction: -0.017453292519943295, vert_offset_correction: 0.0}
+- {dist_correction: 0.0, dist_correction_x: 0.0, dist_correction_y: 0.0, focal_distance: 0.0,
+  focal_slope: 0.0, horiz_offset_correction: 0.0, laser_id: 15, rot_correction: 0.0,
+  vert_correction: 0.2617993877991494, vert_offset_correction: 0.0}
+num_lasers: 16
+distance_resolution: 0.002
+***********************************************************************************************
+  5.运行launch文件
+    roslaunch velodyne_pointcloud VLP16_points.launch calibration:=XXX/VLP-16.yaml            【此处XXX为.yaml文件的绝对路径】
+    为避免上述命令的复杂，现按如下方法可一次性避免：
+    首先将.yaml文件放到ros包内部，避免不小心更改其路径或者将其删除，
+    例：放到/home/mxh(根据个人用户名)/catkin_ws（根据个人工作空间名）/src/velodyne/velodyne_pointcloud/params
+    修改catkin_ws(根据个人工作空间名)/src/velodyne/velodyne_pointcloud/launch/VLP16_points.launch文件
+    把arg name="calibration"的默认值修改为default="$(find velodyne_pointcloud)/params/VLP-16.yaml"，即：
+     <arg name="calibration" default="$(find velodyne_pointcloud)/params/VLP-16.yaml"/>
+    最后保存。
+    上述完成后，以后每次只需要运行roslaunch velodyne_pointcloud VLP16_points.launch。
+    【第一次在catkin_ws/下执行上述roslaunch命令可能会报错提示说“velodyne_pointcloud或VL16_points.launch不是个包文件”，大概是这个意思，很多编译好的包都可能存在这种情况，有一种方法可以避免，就是直接cd到该launch文件所在的文件夹，然后执行roslaunch xxx.launch就可以执行了。这样执行一次之后，再在catkin_ws/下执行roslaunch命令：roslaunch 包名 launch文件名，就不会出问题了，再敲命令时，可以用Tab来补命令，包名称，文件名称和路径，来进行验证，若无法补出来，有大概率命令会出错】
+  6.启动rviz观察点云
+  rosrun rviz rviz -f velodyne
+  在rviz中点Add，topic中选择增加PointCloud2，再在PointCloud2下点topic输入/velodyne_points。
+  【其他操作可在网址中学习，或自行百度】
+六.安装Hector SLAM包和RPlidar驱动包
+  网址：https://github.com/NickL77/RPLidar_Hector_SLAM       （此为github的网址，这个包里包含了hector slam和rpliadr，很方便。下方有README.md，根据这个也可以进行安装，并跑通）
+  1.安装ros包
+    cd
+    cd catkin_ws/src         【根据个人工作空间名修改】
+    git clone https://github.com/NickL77/RPLidar_Hector_SLAM.git
+    cd ..                    【注意有两个点】
+    catkin_make
+    source devel/setup.bash  【这个过程很安全，基本不会报错】
+    Ctrl+D  【关闭终端】
+  2.运行
+    首先，将rpliadr连接到电脑上，Ctrl+Alt+T 【新开一个终端】
+    输入命令 sudo chmod 666 /dev/ttyUSB0   【命令敲到/dev/ttyU  ，用Tab补，正常情况下可直接补全，不正常时，按两次Tab，查看，有可能时ttyUSB1。都没有的话，就把连接线拔掉重新插上，再重复执行。】
+    roslaunch rplidar_ros rplidar.launch  【观察是否报错，若报错根据提示百度解决】
+    Ctrl+Alt+T新开终端，roslaunch hector_slam_launch tutorial.launch
+   【若发现roslaunch时报错，提示roslaunch不是命令，就cd catkin_ws然后source devel/setup.bash，若提示找不到ros包，则按照四.5中的提示做】
+    成功后可看到rviz中的地图。
+    若要保存bag包，自行百度，之前给出的一些网址里也有，不麻烦。
+    若要保存rviz中的地图，1.sudo apt-get install ros-kinetic-map-server  
+                         2.建图完成后，执行rosrun map_server map_saver -f mymap   【mymap为保存的图名，你在哪个目录下执行该命令，则栅格图就保存在该目录下。】
+七.velodyne16跑2D cartographer
+  网址：http://www.manongjc.com/article/38050.html
+  1.在cartographer_ros/launch下创建demo_velodyne_2d.launch
+    cd
+    cd catkin_ws/src/cartographer_ros/cartographer_ros/launch      【catkin_ws为工作空间，根据个人情况改动】
+    gedit demo_velodyne_2d.launch                                  【新建并打开.launch文件，把下列*****内的内容复制粘贴进去】
+**************************************************
+<launch>
+  <param name="/use_sim_time" value="true" />
+
+  <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_node" args="
+          -configuration_directory $(find cartographer_ros)/configuration_files
+          -configuration_basename velodyne.lua"
+      output="screen">
+    <remap from="scan" to="scan" />
+  </node>
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+      type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+  <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+
+</launch>
+*************************************************
+    保存并关闭文件
+  2.在cartographer_ros/configuration_files下新建velodyne.lua
+  【此时路径在launch文件夹下】
+    cd ..
+    cd configuration_files
+    gedit velodyne.lua                                   【新建并打开velodyne.lua，把下列*****内的内容复制粘贴进去】
+*************************************************
+include "map_builder.lua"
+include "trajectory_builder.lua"
+
+options = {
+  map_builder = MAP_BUILDER,
+  trajectory_builder = TRAJECTORY_BUILDER,
+  map_frame = "map",
+  tracking_frame = "velodyne",
+  published_frame = "velodyne",
+  odom_frame = "odom",
+  provide_odom_frame = true,
+  publish_frame_projected_to_2d = false,
+  use_odometry = false,
+  use_nav_sat = false,
+  use_landmarks = false,
+  num_laser_scans = 1,
+  num_multi_echo_laser_scans = 0,
+  num_subdivisions_per_laser_scan = 1,
+  num_point_clouds = 0,
+  lookup_transform_timeout_sec = 0.2,
+  submap_publish_period_sec = 0.3,
+  pose_publish_period_sec = 5e-3,
+  trajectory_publish_period_sec = 30e-3,
+  rangefinder_sampling_ratio = 1.,
+  odometry_sampling_ratio = 1.,
+  fixed_frame_pose_sampling_ratio = 1.,
+  imu_sampling_ratio = 1.,
+  landmarks_sampling_ratio = 1.,
+}
+
+MAP_BUILDER.use_trajectory_builder_2d = true
+
+TRAJECTORY_BUILDER_2D.submaps.num_range_data = 35
+TRAJECTORY_BUILDER_2D.min_range = 0.3
+TRAJECTORY_BUILDER_2D.max_range = 8.
+TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
+TRAJECTORY_BUILDER_2D.use_imu_data = false
+TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 1e-1
+
+POSE_GRAPH.optimization_problem.huber_scale = 1e2
+POSE_GRAPH.optimize_every_n_nodes = 35
+POSE_GRAPH.constraint_builder.min_score = 0.65
+
+return options
+**************************************************
+    保存并关闭文件
+    cd
+    cd catkin_ws
+    catkin_make
+  3.启动
+    首先连接velodyne16，见教程四。
+    cd
+    roslaunch velodyne_pointcloud VLP16_points.launch            【此时velodyne16开始采集数据，可根据教程四来开启rviz查看是否有数据】
+    roslaunch cartographer_ros demo_velodyne_2d.launch           【此时开始见图，马上会弹出rviz展示成图情况，绿色为点云。可以在左侧topic中把PointCloud2勾掉，此时可以看到占用栅格图】
+   【注：以后执行roslaunch命令时，养成用Tab补全地址和文件名的习惯】
+
+
+我在火狐浏览器的书签bookmarks.html,打开火狐浏览器，单击书签——管理所有书签，导入和备份——从HTML文件导入书签。
+实用工具：roboware ，vscode，MATLAB。
